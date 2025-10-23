@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eco Champions</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      background-color: #e9fdf0;
+      color: #034c1e;
+    }
+    header {
+      background: linear-gradient(90deg, #00c853, #00994c);
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+    }
+    header p {
+      margin: 0;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      background: #bfffd0;
+      padding: 0.5rem;
+    }
+
+    nav button {
+      background: white;
+      border: none;
+      border-radius: 25px;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    nav button.active, nav button:hover {
+      background: #00c853;
+      color: white;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 2rem auto;
+      background: white;
+      border-radius: 15px;
+      padding: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .card {
+      background: #e8fff0;
+      border-radius: 15px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .card h3 {
+      margin: 0.5rem 0;
+    }
+
+    .btn {
+      display: inline-block;
+      background: #00c853;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #00994c;
+    }
+
+    .question {
+      text-align: center;
+    }
+
+    .answers button {
+      display: block;
+      width: 100%;
+      margin: 0.5rem 0;
+      background: #c8ffd7;
+      border: none;
+      border-radius: 15px;
+      padding: 0.8rem;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: bold;
+    }
+
+    .answers button:hover {
+      background: #00c853;
+      color: white;
+    }
+
+    .result {
+      text-align: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌎 Eco Champions</h1>
+    <p>Save Our Planet, One Choice at a Time!</p>
+  </header>
+
+  <nav>
+    <button id="dashboardBtn" class="active">🏠 Dashboard</button>
+    <button id="playBtn">🎮 Play</button>
+    <button id="factsBtn">📘 My Facts</button>
+  </nav>
+
+  <div id="content" class="container"></div>
+
+  <footer>🌱 Eco Champions © 2025</footer>
+
+  <script>
+    const content = document.getElementById("content");
+    const dashboardBtn = document.getElementById("dashboardBtn");
+    const playBtn = document.getElementById("playBtn");
+    const factsBtn = document.getElementById("factsBtn");
+
+    let score = parseInt(localStorage.getItem("ecoScore")) || 0;
+    let factsLearned = JSON.parse(localStorage.getItem("ecoFacts")) || [];
+    let challengesWon = parseInt(localStorage.getItem("ecoChallenges")) || 0;
+
+    const questions = [
+      { q: "What should you use to carry your lunch?", a: "Reusable Lunchbox", options: ["Plastic Bag", "Reusable Lunchbox"] },
+      { q: "Which uses less water?", a: "Taking a shower", options: ["Bath", "Taking a shower"] },
+      { q: "Which is better for the planet?", a: "Biking to school", options: ["Driving car", "Biking to school"] },
+      { q: "Best way to reduce plastic?", a: "Use a reusable bottle", options: ["Use plastic cups", "Use a reusable bottle"] },
+      { q: "What saves electricity?", a: "Turning off lights", options: ["Leaving lights on", "Turning off lights"] },
+      { q: "Eco way to shop?", a: "Reusable bags", options: ["Plastic bags", "Reusable bags"] },
+      { q: "Best way to save paper?", a: "Print double-sided", options: ["Print single-sided", "Print double-sided"] },
+      { q: "Best way to travel nearby?", a: "Walk or cycle", options: ["Drive", "Walk or cycle"] },
+      { q: "Where should recyclables go?", a: "Recycle bin", options: ["Trash bin", "Recycle bin"] },
+      { q: "What saves trees?", a: "Recycling paper", options: ["Throwing paper", "Recycling paper"] },
+      { q: "Eco way to drink water?", a: "Refillable bottle", options: ["Plastic bottles", "Refillable bottle"] },
+      { q: "Best energy at home?", a: "Solar panels", options: ["Fossil fuel", "Solar panels"] },
+      { q: "What saves fuel?", a: "Public transport", options: ["Driving alone", "Public transport"] },
+      { q: "Eco-friendly food choice?", a: "Local fruits", options: ["Imported fruits", "Local fruits"] },
+      { q: "Best waste practice?", a: "Composting", options: ["Throw all away", "Composting"] },
+    ];
+
+    const ecoFacts = [
+      "Turning off lights saves both money and the planet.",
+      "Recycling one can saves enough energy to power a TV for 3 hours!",
+      "Walking instead of driving reduces CO₂ emissions.",
+      "Composting reduces landfill waste.",
+      "Plastic bags take 1000 years to decompose.",
+      "Biking keeps you fit and reduces air pollution.",
+      "A reusable bottle replaces hundreds of plastic ones.",
+      "Solar energy is renewable and clean.",
+      "Recycling paper saves trees and water.",
+      "Reusable lunchboxes reduce daily waste.",
+      "Turning off devices at night saves energy.",
+      "Public transport reduces traffic pollution.",
+      "Eating local food lowers your carbon footprint.",
+      "Showering instead of taking a bath saves water.",
+      "Every eco choice helps Earth breathe better.",
+    ];
+
+    let currentQuestion = 0;
+
+    function showDashboard() {
+      setActiveButton(dashboardBtn);
+      content.innerHTML = `
+        <h2>Welcome, Earth Hero! 🌟</h2>
+        <p>Ready to make eco-friendly choices today?</p>
+        <div class="card-grid">
+          <div class="card"><h3>Total Points</h3><p>${score}</p></div>
+          <div class="card"><h3>Facts Learned</h3><p>${factsLearned.length}</p></div>
+          <div class="card"><h3>Challenges Won</h3><p>${challengesWon}</p></div>
+        </div>
+        <div style="text-align:center;margin-top:2rem;">
+          <button class="btn" onclick="startGame()">▶ Start Playing</button>
+        </div>`;
+    }
+
+    function showFacts() {
+      setActiveButton(factsBtn);
+      if (factsLearned.length === 0) {
+        content.innerHTML = `<h2>No facts learned yet!</h2>`;
+        return;
+      }
+      content.innerHTML = `<h2>🌿 Eco Facts You've Learned</h2><ul>${factsLearned.map(f => `<li>${f}</li>`).join("")}</ul>`;
+    }
+
+    function startGame() {
+      setActiveButton(playBtn);
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestion >= questions.length) {
+        content.innerHTML = `<h2>🎉 You finished all challenges!</h2>
+          <p>Total Points: ${score}</p>
+          <button class="btn" onclick="showDashboard()">Go to Dashboard</button>`;
+        return;
+      }
+
+      const q = questions[currentQuestion];
+      content.innerHTML = `
+        <div class="question">
+          <h2>Question ${currentQuestion + 1} of ${questions.length}</h2>
+          <p>${q.q}</p>
+          <div class="answers">
+            ${q.options.map(opt => `<button onclick="checkAnswer('${opt}')">${opt}</button>`).join("")}
+          </div>
+          <div id="result" class="result"></div>
+        </div>`;
+    }
+
+    function checkAnswer(selected) {
+      const q = questions[currentQuestion];
+      const resultDiv = document.getElementById("result");
+      if (selected === q.a) {
+        resultDiv.textContent = "✅ Correct!";
+        score += 10;
+        challengesWon++;
+        const fact = ecoFacts[currentQuestion];
+        if (!factsLearned.includes(fact)) factsLearned.push(fact);
+      } else {
+        resultDiv.textContent = "❌ Wrong! The correct answer is: " + q.a;
+      }
+
+      localStorage.setItem("ecoScore", score);
+      localStorage.setItem("ecoFacts", JSON.stringify(factsLearned));
+      localStorage.setItem("ecoChallenges", challengesWon);
+
+      setTimeout(() => {
+        currentQuestion++;
+        showQuestion();
+      }, 1500);
+    }
+
+    function setActiveButton(btn) {
+      [dashboardBtn, playBtn, factsBtn].forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+
+    dashboardBtn.onclick = showDashboard;
+    playBtn.onclick = startGame;
+    factsBtn.onclick = showFacts;
+
+    showDashboard();
+  </script>
+</body>
+</html>
